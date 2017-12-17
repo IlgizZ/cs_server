@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var moment = require('moment');
 const admin = require('firebase-admin');
 
+
 var cors = require('cors')({
   origin: 'http://localhost:3000',
   optionsSuccessStatus: 200
@@ -13,7 +14,6 @@ var defaultApp = admin.initializeApp(functions.config().firebase);
 const dbRef = admin.database().ref();
 
 require('./src/answers.js')(exports);
-
 
 exports.helloWorld = functions.https.onRequest((request, response) => {
   const method = request.method;
@@ -32,6 +32,15 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
   );
 });
 
+exports.auth = functions.https.onRequest((request, response) => {
+  const method = request.method;
+  const query = request.query;
+  const body = request.body;
+
+  const app = require('./src/signon/app-router.js')(exports);
+
+  return app(request, response)
+});
 
 function checkTime() {
   var time = moment()
