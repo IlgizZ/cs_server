@@ -11,7 +11,8 @@
     "firebase-functions": "^0.7.3",
     "moment": "^2.20.0",
     "passport": "^0.4.0",
-    "passport-steam": "^1.0.8"
+    "passport-steam": "^1.0.8",
+    "querystring": "^0.2.0"
   },
   "private": true
 }

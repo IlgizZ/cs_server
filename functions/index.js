@@ -5,13 +5,18 @@ const admin = require('firebase-admin');
 
 
 var cors = require('cors')({
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:5000/cs-gohavoc/us-central1/',
   optionsSuccessStatus: 200
 })
 
 var equal = require('deep-equal');
-var defaultApp = admin.initializeApp(functions.config().firebase);
+var serviceAccount = require("./key/key.json");
+var defaultApp = admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: 'https://cs-gohavoc.firebaseio.com/'
+});
 const dbRef = admin.database().ref();
+
 
 require('./src/answers.js')(exports);
 
@@ -37,7 +42,7 @@ exports.auth = functions.https.onRequest((request, response) => {
   const query = request.query;
   const body = request.body;
 
-  const app = require('./src/signon/app-router.js')(exports);
+  const app = require('./src/auth/auth_express.js')(exports);
 
   return app(request, response)
 });
