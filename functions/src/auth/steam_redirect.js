@@ -13,25 +13,41 @@ module.exports = function redirectWithToken(req, res) {
     }
 
     const redirectUrl = 'http://localhost:3000/auth';
-    // TODO
-    if (!redirectUrl) {
-      throw new Error("Invalid Session: Invalid client_id");
-    }
 
-    const provider = 'steam' // TODO req.session.provider;
-    if (!provider) {
-      throw new Error("Invalid Session: Invalid provider.");
-    }
+    const provider = 'steam'
 
     var query = { provider }
 
-    console.log("Creating token for user", user);
-
-    return admin.auth().createCustomToken(user.uid).then(token => {
-      query.token = token;
-      const queryStr = querystring.stringify(query);
-      res.redirect(301, `${redirectUrl}?${queryStr}`);
-      return res;
+    // console.log("Creating token for user", user);
+    console.log("session");
+    console.log(req.session.ref);
+    console.log(req.session);
+    parent = req.session.ref
+    var promise = new Promise((resolve, reject) => {
+      resolve()
     });
+
+    console.log(parent);
+    if (parent) {
+      promise = admin.app().database().ref(`profiles/${user.uid}`).once("value").then(snapshot => {
+        if (snapshot.val().newUser) {
+          return snapshot.ref().update({
+            parent,
+            newUser: null
+          })
+        }
+      })
+    }
+
+    return promise.then(() => {
+      return admin.auth()
+        .createCustomToken(user.uid)
+        .then(token => {
+          query.token = token;
+          const queryStr = querystring.stringify(query);
+          res.redirect(301, `${redirectUrl}?${queryStr}`);
+          return res;
+        })
+    })
 
 }

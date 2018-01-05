@@ -2,20 +2,21 @@ module.exports = function () {
   var express = require('express')
     , passport = require('passport')
     , util = require('util')
-    , session = require('express-session')
     , SteamStrategy = require("passport-steam")
     , handleSteamLogin = require("./steam_controller")
     , authRoutes = require('./auth')
     , redirectWithToken = require("./steam_redirect")
-    , session = require("express-session");
-    var functions = require('firebase-functions');
-    const admin = require('firebase-admin');
-    const unknownUrl = "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg";
+    , admin = require('firebase-admin')
+    , firebaseStore = require("connect-session-firebase")
+    , session = require('express-session');
 
-
+  console.log("bilyat'");
+  const FirebaseStore = firebaseStore(session);
+  const store = new FirebaseStore({
+    database: admin.database()
+  });
 
   passport.serializeUser(function(user, done) {
-    console.log("It is my");
     done(null, user);
   });
 
@@ -33,16 +34,16 @@ module.exports = function () {
     }
   ));
 
-  var app = express();
-  app.use(passport.initialize());
-
+  const app = express();
   app.use(session({
+    store,
     secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { secure: true },
     name: "__session"
   }));
+  app.use(passport.initialize());
 
   app.get('/logout', function(req, res){
     req.logout();
@@ -50,6 +51,6 @@ module.exports = function () {
   });
 
   app.use('/', authRoutes);
-
+  store.reap(() => {});
   return app;
 }

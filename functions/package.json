@@ -3,6 +3,7 @@
   "description": "Cloud Functions for Firebase",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "connect-session-firebase": "^5.5.0",
     "cors": "^2.8.4",
     "deep-equal": "^1.0.1",
     "express": "^4.16.2",

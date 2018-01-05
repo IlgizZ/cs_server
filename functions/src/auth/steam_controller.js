@@ -41,6 +41,7 @@ module.exports = function handleSteamLogin(accessToken, steamProfile, done) {
           admin.app().database().ref(`profiles/${firebaseUser.uid}`).update({
             displayName: steamProfile.displayName,
             photoURL: (steamProfile.photos && steamProfile.photos[2] && steamProfile.photos[2].value) || unknownUrl,
+            newUser: true,
             steam: steamProfile._json
           }).then(() => {
             return admin.app().database().ref(`profiles/${firebaseUser.uid}`).once("value").then(snapshot => {

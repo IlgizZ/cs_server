@@ -5,14 +5,10 @@ var express = require('express')
 
 router.get('/steam',
   (req, res, done) => {
-    // if (!req.query.client_id) {
-    //  res.status(400).send("Invalid client id");
-    //  return;
-    // }
-    //
-    // req.session.client_id = req.query.client_id;
-    req.session.provider = "steam";
+    req.session.ref = req.query.ref;
     req.session.save(done);
+    console.log("/steam: ");
+    console.log(req.session);
   },
   passport.authenticate("steam", { failureRedirect: "/fail" })
 );
@@ -26,6 +22,8 @@ router.get('/',
 router.get('/steam/return',
   function (req, res, next) {
     req.url = req.originalUrl;
+    console.log("/steam/return: ");
+    console.log(req.session);
     next();
   },
   passport.authenticate("steam", { failureRedirect: "http://localhost:5000/cs-gohavoc/us-central1/auth/fail" }),
