@@ -8,9 +8,9 @@ module.exports = function () {
     , redirectWithToken = require("./steam_redirect")
     , admin = require('firebase-admin')
     , firebaseStore = require("connect-session-firebase")
+    , cookieParser = require('cookie-parser')
     , session = require('express-session');
 
-  console.log("bilyat'");
   const FirebaseStore = firebaseStore(session);
   const store = new FirebaseStore({
     database: admin.database()
@@ -43,6 +43,7 @@ module.exports = function () {
     cookie: { secure: true },
     name: "__session"
   }));
+  app.use(cookieParser());
   app.use(passport.initialize());
 
   app.get('/logout', function(req, res){

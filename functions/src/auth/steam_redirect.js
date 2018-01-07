@@ -13,25 +13,27 @@ module.exports = function redirectWithToken(req, res) {
     }
 
     const redirectUrl = 'http://localhost:3000/auth';
-
     const provider = 'steam'
 
     var query = { provider }
 
     // console.log("Creating token for user", user);
-    console.log("session");
-    console.log(req.session.ref);
-    console.log(req.session);
-    parent = req.session.ref
+
+    parent = req.cookies.ref
+// TODO
+    res.clearCookie('ref');
+
+    console.log(req.cookies.ref);
+
     var promise = new Promise((resolve, reject) => {
       resolve()
     });
 
     console.log(parent);
     if (parent) {
-      promise = admin.app().database().ref(`profiles/${user.uid}`).once("value").then(snapshot => {
+      promise = admin.app().database().ref(`profiles/${user.uid}`).once("value").then( snapshot => {
         if (snapshot.val().newUser) {
-          return snapshot.ref().update({
+          return snapshot.ref.update({
             parent,
             newUser: null
           })

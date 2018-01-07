@@ -18,7 +18,6 @@ var defaultApp = admin.initializeApp({
 
 const dbRef = admin.database().ref();
 const expressServer = require('./src/auth/auth_express.js')(exports);
-
 require('./src/answers.js')(exports);
 
 exports.helloWorld = functions.https.onRequest((request, response) => {
