@@ -4,9 +4,9 @@ const querystring = require("querystring");
 
 module.exports = function redirectWithToken(req, res) {
 
-    const user = req.user;
-
-    if (!user) {
+    const {uid} = req.user;
+console.log(uid);
+    if (!req.user) {
       var error = {error: "Invalid user - not logged in?"}
       response.status(505).send(error);
       return;
@@ -20,30 +20,33 @@ module.exports = function redirectWithToken(req, res) {
     // console.log("Creating token for user", user);
 
     parent = req.cookies.ref
-// TODO
-    res.clearCookie('ref');
-
-    console.log(req.cookies.ref);
 
     var promise = new Promise((resolve, reject) => {
       resolve()
     });
 
-    console.log(parent);
     if (parent) {
-      promise = admin.app().database().ref(`profiles/${user.uid}`).once("value").then( snapshot => {
+      console.log("parent referal");
+      console.log(parent);
+
+      res.clearCookie('ref');
+      console.log("referal was deleted from cookie");
+
+      promise = admin.app().database().ref(`profiles/${uid}`).once("value").then( snapshot => {
         if (snapshot.val().newUser) {
           return snapshot.ref.update({
             parent,
             newUser: null
           })
         }
+
       })
     }
-
+console.log(12);
     return promise.then(() => {
+      console.log('createing token for ', uid);
       return admin.auth()
-        .createCustomToken(user.uid)
+        .createCustomToken(uid)
         .then(token => {
           query.token = token;
           const queryStr = querystring.stringify(query);
