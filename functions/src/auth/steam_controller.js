@@ -57,14 +57,15 @@ module.exports = function handleSteamLogin(accessToken, steamProfile, done) {
             return   admin.app().database().ref(`profiles/${uid}`).update({
                 displayName: steamProfile.displayName,
                 photoURL: (steamProfile.photos && steamProfile.photos[2] && steamProfile.photos[2].value) || unknownUrl,
-                steam: steamProfile._json
+                steam: steamProfile._json,
+                balance: 0,
+                wager_balance: 0
               }).then(() => {
 
                 return addReferal(uid).then(() => {
                   return admin.app().database().ref(`profiles/${uid}`).once("value").then(snapshot => {
                     userProfile = snapshot.val()
                     data = Object.assign({}, userProfile, firebaseUser)
-                    console.log("exit");
                     done(undefined, data)
                   });
                 })

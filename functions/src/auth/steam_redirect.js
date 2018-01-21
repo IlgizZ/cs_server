@@ -5,7 +5,7 @@ const querystring = require("querystring");
 module.exports = function redirectWithToken(req, res) {
 
     const {uid} = req.user;
-console.log(uid);
+
     if (!req.user) {
       var error = {error: "Invalid user - not logged in?"}
       response.status(505).send(error);
@@ -16,8 +16,6 @@ console.log(uid);
     const provider = 'steam'
 
     var query = { provider }
-
-    // console.log("Creating token for user", user);
 
     parent = req.cookies.ref
 
@@ -33,16 +31,19 @@ console.log(uid);
       console.log("referal was deleted from cookie");
 
       promise = admin.app().database().ref(`profiles/${uid}`).once("value").then( snapshot => {
+
         if (snapshot.val().newUser) {
           return snapshot.ref.update({
             parent,
             newUser: null
           })
+        } else {
+          console.warn("Warning!!! Trying to reregistrate referal");
         }
 
       })
     }
-console.log(12);
+
     return promise.then(() => {
       console.log('createing token for ', uid);
       return admin.auth()
@@ -51,8 +52,6 @@ console.log(12);
           query.token = token;
           const queryStr = querystring.stringify(query);
           res.redirect(301, `${redirectUrl}?${queryStr}`);
-          return res;
         })
     })
-
 }

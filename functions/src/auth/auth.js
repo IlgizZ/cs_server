@@ -27,7 +27,7 @@ router.get('/steam/return',
     next();
   },
   passport.authenticate("steam", { failureRedirect: "http://localhost:5000/cs-gohavoc/us-central1/auth/fail" }),
-  (req, res) => redirectWithToken(req, res).then(res => res.end())
+  (req, res) => redirectWithToken(req, res)
 );
 
 router.get("/fail", (req, res) => {
